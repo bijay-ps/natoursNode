@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const path = require('path');
 const dotEnv = require('dotenv');
 dotEnv.config({path: './config.env'});
 const fs = require('fs');
@@ -16,7 +17,7 @@ mongoose.connect(DB, {
   .then(() => { console.log('DB connection successful') });
 
 // READ JSON FILE
-const tours = JSON.parse(fs.readFile('tours-simple.json', 'utf-8'));
+const tours = JSON.parse(fs.readFileSync(path.join(__dirname, 'tours-simple.json'), 'utf-8'));
 
 // IMPORT DATA INTO DB
 const importData = async () => {
@@ -26,6 +27,7 @@ const importData = async () => {
   } catch (e) {
     console.log(e);
   }
+  process.exit(0);
 };
 
 // DELETE DATA FROM DB
@@ -36,4 +38,11 @@ const deleteData = async () => {
   } catch (e) {
     console.log(e);
   }
+  process.exit(0);
 };
+
+if (process.argv[2] === '--import') {
+  importData();
+} else if (process.argv[2] === '--delete') {
+  deleteData();
+}
