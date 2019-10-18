@@ -11,7 +11,7 @@ exports.aliasTopTours = (req, res, next) => {
 exports.getAllTours = async (req, res) => {
   try {
     // execute query
-    const features = new APIFeature(Tour.find(), req.query)
+    const features = new APIFeatures(Tour.find(), req.query)
       .filter()
       .sort()
       .limitFields()
@@ -157,11 +157,18 @@ exports.getMonthlyPlan = async (req, res) => {
       }
     }, {
       $group: {
-        _id: {
-          $month: '$startDates'
-        },
-        numTourStarts: { $sum: 1 }
+        _id: { $month: '$startDates' },
+        numTourStarts: { $sum: 1 },
+        tours: { $push: '$name' }
       }
+    }, {
+    $addFields: { month: '$_id'}
+    }, {
+    $project: { _id: 0 }
+    }, {
+    $sort: { numTourStarts: -1 }
+    }, {
+    $limit: 12
     }
   ]);
   res.status(200).json({
