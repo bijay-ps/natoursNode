@@ -120,11 +120,11 @@ exports.getTourStats = async (req, res) => {
           minPrice: { $min: '$price' },
           maxPrice: { $max: '$price' },
         }
-      },
+      }/*,
       {
         $sort: { avgPrice: 1 }
       }
-      /*{
+      {
         $match: { _id: { $ne: 'EASY' } }
       }*/
     ]);
