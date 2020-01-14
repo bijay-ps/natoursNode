@@ -9,8 +9,8 @@ const User = require('./../../models/userModel');
 
 const port = process.env.PORT || 3000;
 
-// const DB = process.env.DB.replace('<PASSWORD>', process.env.DB_PASSWORD);
-const DB = process.env.DB_LOCAL;
+const DB = process.env.DB.replace('<PASSWORD>', process.env.DB_PASSWORD);
+// const DB = process.env.DB_LOCAL;
 
 mongoose
   .connect(DB, {
