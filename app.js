@@ -15,6 +15,9 @@ const reviewRouter = require('./routes/reviewRoutes');
 
 const app = express();
 
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
 // GLOBAL MIDDLEWARE
 
 // set security HTTP headers
@@ -82,6 +85,13 @@ app.use((req, res, next) => {
 });
 
 // ROUTES
+app.get('/', (req, res, next) => {
+  res.status(200).render('base', {
+    tour: 'The Forest Hiker',
+    user: 'Jonas'
+  });
+});
+
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
