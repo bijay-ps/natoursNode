@@ -12,8 +12,8 @@ const app = require('./app');
 
 const port = process.env.PORT || 3000;
 
-// const DB = process.env.DB.replace('<PASSWORD>', process.env.DB_PASSWORD);
-const DB = process.env.DB_LOCAL;
+const DB = process.env.DB.replace('<PASSWORD>', process.env.DB_PASSWORD);
+// const DB = process.env.DB_LOCAL;
 
 mongoose
   .connect(DB, {
@@ -24,6 +24,7 @@ mongoose
   })
   .then(() => {
     console.log('DB connection successful');
+    console.log('MongoDB running 🏃‍♂️🏃‍♂️');
   });
 // .catch(err => console.log('ERROR')); // we will deal with this issue globally
 
