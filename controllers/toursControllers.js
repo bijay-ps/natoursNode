@@ -9,6 +9,7 @@ exports.aliasTopTour = (req, res, next) => {
 };
 
 exports.getAllTours = async (req, res) => {
+  console.log('req: ', req);
   try {
     // BUILD QUERY
     // 1A) Filtering
@@ -262,8 +263,3 @@ exports.getMonthlyPlan = async (req, res) => {
     });
   }
 };
-
-function addMonth(id) {
-  console.log(id, typeof id);
-  return 1;
-}
