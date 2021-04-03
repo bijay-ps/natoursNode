@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const validator = require('validator');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -9,6 +10,12 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'A tour must have a name'],
       unique: true,
       trim: true,
+      maxlength: [40, 'A tour must have less than or equal to 40 characters'],
+      minlength: [5, 'A tour must have greater than or equal to 40 characters'],
+      /*validate: [
+        validator.isAlpha,
+        'Tour name must only contains only characters',
+      ],*/
     },
     duration: {
       type: Number,
@@ -21,6 +28,10 @@ const tourSchema = new mongoose.Schema(
     difficulty: {
       type: String,
       required: [true, 'A tour must have a difficulty'],
+      enum: {
+        values: ['easy', 'medium', 'difficult'],
+        message: 'Difficulty is either easy, medium, difficult',
+      },
     },
     ratingsAverage: {
       type: Number,
@@ -34,7 +45,16 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'A tour must have a price'],
     },
-    priceDiscount: Number,
+    priceDiscount: {
+      type: Number,
+      validate: {
+        validator: function (val) {
+          // Here 'this' only point to the current doc on the NEW document creation
+          return val < this.price;
+        },
+        message: 'Discount price {VALUE} should be below regular price',
+      },
+    },
     summary: {
       type: String,
       trim: true,
@@ -85,9 +105,15 @@ tourSchema.pre('save', function (next) {
 });
 
 // QUERY MIDDLEWARE
-// tourSchema.pre('find', function (next) {
 tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
+  this.start = Date.now();
+  next();
+});
+
+// AGGREGATION MIDDLEWARE
+tourSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
   next();
 });
 
