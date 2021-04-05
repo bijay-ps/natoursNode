@@ -67,7 +67,6 @@ app.use(
   })
 );
 
-
 /*app.get('/api/v1/tours', getAllTours);
 app.post('/api/v1/tours', createTour);
 app.get('/api/v1/tours/:id', getTour);
