@@ -13,6 +13,7 @@ const globalErrHandler = require('./contollers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const bookingRouter = require('./routes/bookingRoutes');
 const viewRouter = require('./routes/viewRoutes');
 
 const app = express();
@@ -21,6 +22,8 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 // GLOBAL MIDDLEWARE
+// Serving static file
+app.use(express.static(path.join(__dirname, 'public')));
 
 // set security HTTP headers
 app.use(helmet());
@@ -34,7 +37,7 @@ if (process.env.NODE_ENV === 'development') {
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000,
-  message: 'Too many request from this IP, please try again in an hour!'
+  message: 'Too many request from this IP, please try again in an hour!',
 });
 
 app.use('/api', limiter);
@@ -59,13 +62,11 @@ app.use(
       'ratingsAverage',
       'maxGroupSize',
       'difficulty',
-      'price'
-    ]
+      'price',
+    ],
   })
 );
 
-// Serving static file
-app.use(express.static(path.join(__dirname, 'public')));
 
 /*app.get('/api/v1/tours', getAllTours);
 app.post('/api/v1/tours', createTour);
@@ -93,6 +94,7 @@ app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bookings', bookingRouter);
 
 app.all('*', (req, res, next) => {
   const errMsg = `Can't find ${req.originalUrl} on this server!`;
