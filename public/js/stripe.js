@@ -1,6 +1,6 @@
 /*eslint-disable*/
 import axios from 'axios';
-const stripe = Stripe('sk_test_QHp39KkY5MhVFDPWHwUPZQfV00ZHsTYMcD');
+const stripe = Stripe('pk_test_87dKqryf2hxygp5MGblJhPTj00ZQUdeBvv');
 
 export const bookTour = async (tourId) => {
   // 1. Get the session from server
