@@ -21,8 +21,8 @@ module.exports = class Email {
       port: process.env.EMAIL_PORT,
       auth: {
         user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD
-      }
+        pass: process.env.EMAIL_PASSWORD,
+      },
     });
   }
 
@@ -33,7 +33,7 @@ module.exports = class Email {
       path.join(`${__dirname}`, '..', 'views', 'emails', `${template}.pug`, {
         firstName: this.firtName,
         url: this.url,
-        subject: this.subject
+        subject: this.subject,
       })
     );
     // 2. Define email options
@@ -42,7 +42,7 @@ module.exports = class Email {
       to: this.to,
       subject,
       html,
-      text: htmltotext.fromString(html)
+      text: htmltotext.fromString(html),
     };
 
     // 3. Create a transport and send email
