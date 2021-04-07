@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/natours.iml" filepath="$PROJECT_DIR$/.idea/natours.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/natoursNode.iml" filepath="$PROJECT_DIR$/.idea/natoursNode.iml" />
     </modules>
   </component>
 </project>
