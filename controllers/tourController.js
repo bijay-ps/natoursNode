@@ -10,7 +10,7 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
-exports.getAllTours = catchAsync(async (req, res, next) => {
+/*exports.getAllTours = catchAsync(async (req, res, next) => {
   const features = new APIFeatures(Tour.find(), req.query)
     .filter()
     .sort()
@@ -26,7 +26,37 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
       tours
     }
   });
-});
+});*/
+
+exports.getAllTours = async (req, res) => {
+  try {
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    const queryObj = { ...req.query }
+    const excludeFields = ['page', 'sort', 'limit', 'fields']
+    excludeFields.forEach(el => delete queryObj[el])
+    // console.log(req.query, queryObj)
+    console.log(req.query);
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`)
+    // console.log(JSON.parse(queryStr));
+    let query = Tour.find(JSON.parse(queryStr));
+    if (req.query.sort) {
+      query = query.sort(req.query.sort)
+    }
+    const tours = await query
+    res.status(200).json({
+      status: "Success",
+      results: tours.length,
+      data: {
+        tours,
+      },
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: "fail"
+    })
+  }
+};
 
 exports.getTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.id);
