@@ -6664,7 +6664,8 @@ parcelRequire = (function (modules, cache, entry, globalName) {
         });
 
         for (
-          var es6Symbols = 'hasInstance,isConcatSpreadable,iterator,match,replace,search,species,split,toPrimitive,toStringTag,unscopables'.split( // 19.4.2.2, 19.4.2.3, 19.4.2.4, 19.4.2.6, 19.4.2.8, 19.4.2.9, 19.4.2.10, 19.4.2.11, 19.4.2.12, 19.4.2.13, 19.4.2.14
+          var es6Symbols = // 19.4.2.2, 19.4.2.3, 19.4.2.4, 19.4.2.6, 19.4.2.8, 19.4.2.9, 19.4.2.10, 19.4.2.11, 19.4.2.12, 19.4.2.13, 19.4.2.14
+            'hasInstance,isConcatSpreadable,iterator,match,replace,search,species,split,toPrimitive,toStringTag,unscopables'.split(
               ','
             ),
             j = 0;
@@ -12400,6 +12401,139 @@ parcelRequire = (function (modules, cache, entry, globalName) {
       },
       { axios: '../../node_modules/axios/index.js', './alert': 'alert.js' },
     ],
+    'stripe.js': [
+      function (require, module, exports) {
+        'use strict';
+
+        Object.defineProperty(exports, '__esModule', {
+          value: true,
+        });
+        exports.bookTour = void 0;
+
+        var _axios = _interopRequireDefault(require('axios'));
+
+        var _alert = require('./alert');
+
+        function _interopRequireDefault(obj) {
+          return obj && obj.__esModule ? obj : { default: obj };
+        }
+
+        function asyncGeneratorStep(
+          gen,
+          resolve,
+          reject,
+          _next,
+          _throw,
+          key,
+          arg
+        ) {
+          try {
+            var info = gen[key](arg);
+            var value = info.value;
+          } catch (error) {
+            reject(error);
+            return;
+          }
+          if (info.done) {
+            resolve(value);
+          } else {
+            Promise.resolve(value).then(_next, _throw);
+          }
+        }
+
+        function _asyncToGenerator(fn) {
+          return function () {
+            var self = this,
+              args = arguments;
+            return new Promise(function (resolve, reject) {
+              var gen = fn.apply(self, args);
+              function _next(value) {
+                asyncGeneratorStep(
+                  gen,
+                  resolve,
+                  reject,
+                  _next,
+                  _throw,
+                  'next',
+                  value
+                );
+              }
+              function _throw(err) {
+                asyncGeneratorStep(
+                  gen,
+                  resolve,
+                  reject,
+                  _next,
+                  _throw,
+                  'throw',
+                  err
+                );
+              }
+              _next(undefined);
+            });
+          };
+        }
+
+        var stripe = Stripe('pk_test_87dKqryf2hxygp5MGblJhPTj00ZQUdeBvv');
+
+        var bookTour = /*#__PURE__*/ (function () {
+          var _ref = _asyncToGenerator(
+            /*#__PURE__*/ regeneratorRuntime.mark(function _callee(tourId) {
+              var session;
+              return regeneratorRuntime.wrap(
+                function _callee$(_context) {
+                  while (1) {
+                    switch ((_context.prev = _context.next)) {
+                      case 0:
+                        _context.prev = 0;
+                        _context.next = 3;
+                        return (0, _axios.default)(
+                          'http://localhost:3000/api/v1/bookings/checkout-session/'.concat(
+                            tourId
+                          )
+                        );
+
+                      case 3:
+                        session = _context.sent;
+                        console.log('session: ', session); // 2. Create checkout form and charge credit card
+
+                        _context.next = 7;
+                        return stripe.redirectToCheckout({
+                          sessionId: session.data.session.id,
+                        });
+
+                      case 7:
+                        _context.next = 13;
+                        break;
+
+                      case 9:
+                        _context.prev = 9;
+                        _context.t0 = _context['catch'](0);
+                        console.log(_context.t0);
+                        (0, _alert.showAlert)('error', _context.t0);
+
+                      case 13:
+                      case 'end':
+                        return _context.stop();
+                    }
+                  }
+                },
+                _callee,
+                null,
+                [[0, 9]]
+              );
+            })
+          );
+
+          return function bookTour(_x) {
+            return _ref.apply(this, arguments);
+          };
+        })();
+
+        exports.bookTour = bookTour;
+      },
+      { axios: '../../node_modules/axios/index.js', './alert': 'alert.js' },
+    ],
     'index.js': [
       function (require, module, exports) {
         'use strict';
@@ -12672,6 +12806,8 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
         var _updateSettings = require('./updateSettings');
 
+        var _stripe = require('./stripe');
+
         function asyncGeneratorStep(
           gen,
           resolve,
@@ -12733,40 +12869,33 @@ parcelRequire = (function (modules, cache, entry, globalName) {
         var loginForm = document.querySelector('.form--login');
         var logOutBtn = document.querySelector('.nav__el--logout');
         var userDataForm = document.querySelector('.form-user-data');
-        var userPasswordForm = document.querySelector('.form-user-password'); // DELEGATION
+        var userPasswordForm = document.querySelector('.form-user-password');
+        var bookBtn = document.getElementById('book-tour'); // DELEGATION
 
         if (mapBox) {
           var locations = JSON.parse(mapBox.dataset.locations);
           (0, _mapbox.displayMap)(locations);
         }
 
-        if (loginForm) {
+        if (loginForm)
           loginForm.addEventListener('submit', function (e) {
             e.preventDefault();
             var email = document.getElementById('email').value;
             var password = document.getElementById('password').value;
             (0, _login.login)(email, password);
           });
-        }
-
-        if (logOutBtn) {
-          logOutBtn.addEventListener('click', _login.logout);
-        }
-
-        if (userDataForm) {
+        if (logOutBtn) logOutBtn.addEventListener('click', _login.logout);
+        if (userDataForm)
           userDataForm.addEventListener('submit', function (e) {
             e.preventDefault();
             var form = new FormData();
             form.append('name', document.getElementById('name').value);
             form.append('email', document.getElementById('email').value);
             form.append('photo', document.getElementById('photo').files[0]);
-            console.log('Form 📑 ', form);
             (0, _updateSettings.updateSettings)(form, 'data');
           });
-        }
-
-        if (userPasswordForm) {
-          userDataForm.addEventListener(
+        if (userPasswordForm)
+          userPasswordForm.addEventListener(
             'submit',
             /*#__PURE__*/ (function () {
               var _ref = _asyncToGenerator(
@@ -12821,7 +12950,13 @@ parcelRequire = (function (modules, cache, entry, globalName) {
               };
             })()
           );
-        }
+        if (bookBtn)
+          bookBtn.addEventListener('click', function (e) {
+            console.log('Book button clicked');
+            e.target.textContent = 'Processing...';
+            var tourId = e.target.dataset.tourId;
+            (0, _stripe.bookTour)(tourId);
+          });
       },
       {
         'core-js/modules/es6.array.copy-within.js':
@@ -13089,6 +13224,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
         './mapbox': 'mapbox.js',
         './login': 'login.js',
         './updateSettings': 'updateSettings.js',
+        './stripe': 'stripe.js',
       },
     ],
     '../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js': [
@@ -13124,7 +13260,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
           var hostname = '' || location.hostname;
           var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
           var ws = new WebSocket(
-            protocol + '://' + hostname + ':' + '53159' + '/'
+            protocol + '://' + hostname + ':' + '61086' + '/'
           );
 
           ws.onmessage = function (event) {

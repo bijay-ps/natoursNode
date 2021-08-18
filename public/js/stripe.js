@@ -1,5 +1,6 @@
 /*eslint-disable*/
 import axios from 'axios';
+import { showAlert } from './alert';
 const stripe = Stripe('pk_test_87dKqryf2hxygp5MGblJhPTj00ZQUdeBvv');
 
 export const bookTour = async (tourId) => {
@@ -10,9 +11,11 @@ export const bookTour = async (tourId) => {
     );
     console.log('session: ', session);
     // 2. Create checkout form and charge credit card
+    await stripe.redirectToCheckout({
+      sessionId: session.data.session.id,
+    });
   } catch (err) {
     console.log(err);
     showAlert('error', err);
   }
-
 };
