@@ -14,7 +14,17 @@ const Tour = require('./../models/tourModel');
 
 exports.getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    const queryObj = { ...req.query };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach(el => delete queryObj[el]);
+
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+
+    const query = Tour.find(JSON.parse(queryStr));
+
+    const tours = await query;
+
     res.status(200).json({
       status: 'success',
       requestedAt: req.requestTime,
@@ -24,10 +34,11 @@ exports.getAllTours = async (req, res) => {
       }
     });
   } catch (e) {
+    console.log('Error 🔥🔥: ', e);
     res.status(404).json({
       status: 'failed',
       message: e
-    })
+    });
   }
 };
 
@@ -41,16 +52,16 @@ exports.getTour = async (req, res) => {
       }
     });
   } catch (e) {
-   res.status(404).json({
-     status: 'failed',
-     message: e
-   })
+    res.status(404).json({
+      status: 'failed',
+      message: e
+    });
   }
 };
 
 exports.createTour = async (req, res) => {
   try {
-    const newTour = await Tour.create(req.body)
+    const newTour = await Tour.create(req.body);
     res.status(201).json({
       status: 'success',
       data: {
@@ -61,7 +72,7 @@ exports.createTour = async (req, res) => {
     res.status(400).json({
       status: 'fail',
       message: e
-    })
+    });
   }
 };
 
@@ -70,7 +81,7 @@ exports.updateTour = async (req, res) => {
     const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true
-    })
+    });
     res.status(200).json({
       status: 'success',
       data: {
@@ -81,7 +92,7 @@ exports.updateTour = async (req, res) => {
     res.status(400).json({
       status: 'fail',
       message: e
-    })
+    });
   }
 };
 
@@ -96,6 +107,6 @@ exports.deleteTour = async (req, res) => {
     res.status(400).json({
       status: 'fail',
       message: e
-    })
+    });
   }
 };
