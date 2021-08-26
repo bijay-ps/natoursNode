@@ -116,7 +116,7 @@ exports.deleteTour = async (req, res) => {
   }
 };
 
-/*exports.getTourStats = async (req, res) => {
+exports.getTourStats = async (req, res) => {
   try {
     const stats = await Tour.aggregate([
       {
@@ -144,46 +144,6 @@ exports.deleteTour = async (req, res) => {
     res.status(400).json({
       status: 'fail',
       message: e
-    });
-  }
-};*/
-
-exports.getTourStats = async (req, res, next) => {
-  try {
-    const stats = await Tour.aggregate([
-      {
-        $match: { ratingsAverage: { $gte: 4.5 } } //select or filter documents
-      },
-      {
-        $group: {
-          _id: { $toUpper: '$difficulty' },
-          numTours: { $sum: 1 },
-          numRatings: { $sum: '$ratingsQuantity' },
-          avgRating: { $avg: '$ratingsAverage' },
-          avgPrice: { $avg: '$price' },
-          minPrice: { $min: '$price' },
-          maxPrice: { $max: '$price' }
-        }
-      },
-      {
-        $sort: { avgPrice: 1 } // 1 for ascending, -1 for descending
-      }
-      // {
-      //   $match: { _id: { $ne: 'EASY' } }
-      // }
-    ]);
-
-    res.status(200).json({
-      status: 'success',
-      data: {
-        stats
-      }
-    });
-  } catch (err) {
-    console.log('Error 🔥🔥: ', err);
-    res.status(404).json({
-      status: 'fail',
-      message: err
     });
   }
 };
@@ -234,6 +194,57 @@ exports.getMonthlyPlan = async (req, res, next) => {
       }
     });
   } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err
+    });
+  }
+};
+
+exports.getMonthlyPlan = async (req, res) => {
+  try {
+    const year = req.params.year * 1;
+    const plan = await Tour.aggregate([
+      {
+        $unwind: '$startDates'
+      },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: { $month: '$startDates' },
+          numTourStarts: { $sum: 1 },
+          tours: { $push: '$name' }
+        }
+      },
+      {
+        $addFields: { month: '$_id' }
+      },
+      {
+        $project: {
+          _id: 0
+        }
+      },
+      {
+        $sort: {
+          numTourStarts: -1
+        }
+      }
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        plan
+      }
+    });
+  } catch (e) {
     res.status(404).json({
       status: 'fail',
       message: err
